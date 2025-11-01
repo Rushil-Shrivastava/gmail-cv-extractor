@@ -9,7 +9,6 @@ token.json
 *.key
 *.crt
 secrets/
-.env.*
 
 # -------------------------------
 # 🧠 Project Data & Artifacts

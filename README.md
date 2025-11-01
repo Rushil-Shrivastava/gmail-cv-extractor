@@ -36,24 +36,24 @@ Table of contents
 
 2) Quick repo layout (expected)
 
-gmail-cv-extractor/
-├── app/
-│   ├── main.py
-│   ├── run_sync.py
-│   ├── parser.py
-│   ├── db.py
-│   └── gmail_client.py
-├── data/            # created by you
-├── attachments/     # created by you
-├── requirements.txt
-├── Dockerfile
-├── docker-compose.yml
-└── README.md
+    gmail-cv-extractor/
+    ├── app/
+    │   ├── main.py
+    │   ├── run_sync.py
+    │   ├── parser.py
+    │   ├── db.py
+    │   └── gmail_client.py
+    ├── data/            # created by you
+    ├── attachments/     # created by you
+    ├── requirements.txt
+    ├── Dockerfile
+    ├── docker-compose.yml
+    └── README.md
 
 Create directories:
 
-mkdir -p data attachments
-chmod -R 755 data attachments
+    mkdir -p data attachments
+    chmod -R 755 data attachments
 
 ⸻
 
@@ -80,15 +80,15 @@ chmod -R 755 data attachments
 4) Local setup (virtual environment, deps)
 	1.	Use Python 3.12 (install via Homebrew on macOS if needed):
 
-brew install python@3.12
-python3.12 -m venv .venv
-source .venv/bin/activate
+        brew install python@3.12
+        python3.12 -m venv .venv
+        source .venv/bin/activate
 
 	2.	Save the repo requirements.txt (the project includes a recommended one). Example lightweight (spaCy-free) requirements are included in the repo.
 	3.	Install dependencies:
 
-pip install --upgrade pip setuptools wheel
-pip install -r requirements.txt
+        pip install --upgrade pip setuptools wheel
+        pip install -r requirements.txt
 
 	4.	(Optional) Install the tesseract binary if you plan to OCR:
 
@@ -102,7 +102,7 @@ brew install tesseract
 	1.	Place credentials.json in repo root.
 	2.	Run initial sync (local machine; this opens a browser to authorize):
 
-python -m app.run_sync
+        python -m app.run_sync
 
 	3.	A browser window opens → choose your test Google account (the one you added as a test user) → Accept permissions.
 	4.	After successful consent, token.pickle is created in your repo. Keep it secure.
@@ -115,7 +115,7 @@ If running on a headless server: run this step locally then copy token.pickle in
 
 After token.pickle exists, run:
 
-python -m app.run_sync
+    python -m app.run_sync
 
 What the script does:
 	•	Authenticates via token.pickle / credentials.json.
@@ -130,7 +130,7 @@ Summary will be printed to console.
 
 Start API:
 
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+    uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 Open:
 	•	Swagger UI: http://localhost:8000/docs
@@ -147,28 +147,28 @@ Dockerfile (provided)
 
 Basic flow:
 
-docker build -t gmail-cv-extractor .
+    docker build -t gmail-cv-extractor .
 
 Docker run (sync mode)
 
-Mount credentials and token and bind folders:
+    Mount credentials and token and bind folders:
 
-docker run --rm \
-  -v $(pwd)/credentials.json:/app/credentials.json:ro \
-  -v $(pwd)/token.pickle:/app/token.pickle:rw \
-  -v $(pwd)/attachments:/app/attachments \
-  -v $(pwd)/data:/app/data \
-  gmail-cv-extractor
+        docker run --rm \
+        -v $(pwd)/credentials.json:/app/credentials.json:ro \
+        -v $(pwd)/token.pickle:/app/token.pickle:rw \
+        -v $(pwd)/attachments:/app/attachments \
+        -v $(pwd)/data:/app/data \
+        gmail-cv-extractor
 
 docker-compose (recommended)
 
-Use the docker-compose.yml in the repo. Example use:
+    Use the docker-compose.yml in the repo. Example use:
 
-docker compose build
-docker compose up        # default MODE=sync
-MODE=api docker compose up  # run FastAPI
+        docker compose build
+        docker compose up        # default MODE=sync
+        MODE=api docker compose up  # run FastAPI
 
-If docker command is missing on macOS, install Docker Desktop: https://www.docker.com/products/docker-desktop/
+    If docker command is missing on macOS, install Docker Desktop: https://www.docker.com/products/docker-desktop/
 
 ⸻
 
@@ -183,15 +183,15 @@ Option B — mock attachments locally
 	•	Place files in attachments/ folder:
 	•	attachments/John_Resume.txt with content:
 
-Name: John Doe
-Email: john@example.com
-Phone: +91 99999 99999
-Skills: Python, SQL, Docker
+        Name: John Doe
+        Email: john@example.com
+        Phone: +91 99999 99999
+        Skills: Python, SQL, Docker
 
 
 	•	In run_sync.py temporarily replace attachments = fetch_attachments(...) with:
 
-attachments = [{"filename":"John_Resume.txt","path":"attachments/John_Resume.txt"}]
+        attachments = [{"filename":"John_Resume.txt","path":"attachments/John_Resume.txt"}]
 
 	•	Run sync to test parser and DB logic.
 
@@ -206,8 +206,8 @@ attachments = [{"filename":"John_Resume.txt","path":"attachments/John_Resume.txt
 	•	sqlite3.OperationalError: unable to open database file:
 	•	Ensure data/ directory exists and is writable:
 
-mkdir -p data attachments
-chmod -R 755 data attachments
+        mkdir -p data attachments
+        chmod -R 755 data attachments
 
 
 	•	PDFPasswordIncorrect when parsing a PDF:
@@ -241,37 +241,31 @@ chmod -R 755 data attachments
 Quick copy-paste checklist (do this right after cloning)
 
 # clone
-git clone <your-repo-url>
-cd gmail-cv-extractor
+    git clone <your-repo-url>
+    cd gmail-cv-extractor
 
 # prepare dirs
-mkdir -p data attachments
-chmod -R 755 data attachments
+    mkdir -p data attachments
+    chmod -R 755 data attachments
 
 # create python venv (python3.12)
-python3.12 -m venv .venv
-source .venv/bin/activate
+    python3.12 -m venv .venv
+    source .venv/bin/activate
 
 # install deps
-pip install --upgrade pip
-pip install -r requirements.txt
+    pip install --upgrade pip
+    pip install -r requirements.txt
 
 # copy credentials.json (create in Google Cloud as explained above)
 # run this locally to create token.pickle (opens browser)
-python -m app.run_sync
+    python -m app.run_sync
 
 # run API (optional)
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+    uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 # or run in docker-compose
-docker compose build
-docker compose up
+    docker compose build
+    docker compose up
 
 
 ⸻
-
-If you want, I can:
-	•	produce a polished README.md file and push the exact text as a ready-to-copy file, or
-	•	generate a short SETUP.md with only the Google Cloud screenshots and exact navigation clicks for the OAuth consent screen.
-
-Which would you like next?
