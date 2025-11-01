@@ -7,30 +7,30 @@ This README assumes you do not include any credentials in the repo (good). It te
 ⸻
 
 Table of contents
-	1.	Prerequisites
-	2.	Quick repo layout
-	3.	Prepare Google credentials (step-by-step)
-	4.	Local setup (Python 3.12 recommended)
-	5.	First OAuth run (generate token.pickle)
-	6.	Run the sync locally
-	7.	Run the FastAPI server
-	8.	Docker & Docker Compose usage
-	9.	Testing (send yourself sample resumes)
-	10.	Troubleshooting (common errors & fixes)
-	11.	Security notes & production tips
-	12.	Optional improvements
+1.	Prerequisites
+2.	Quick repo layout
+3.	Prepare Google credentials (step-by-step)
+4.	Local setup (Python 3.12 recommended)
+5.	First OAuth run (generate token.pickle)
+6.	Run the sync locally
+7.	Run the FastAPI server
+8.	Docker & Docker Compose usage
+9.	Testing (send yourself sample resumes)
+10.	Troubleshooting (common errors & fixes)
+11.	Security notes & production tips
+12.	Optional improvements
 
 ⸻
 
 1) Prerequisites
-	•	macOS / Linux / Windows with:
-	•	Python 3.12 (strongly recommended). (If you already have 3.14, create a 3.12 venv.)
-	•	git
-	•	pip
-	•	(Optional) Docker & Docker Compose if you want to run containers.
-	•	(Optional for OCR) Tesseract binary if you plan to OCR scanned PDFs:
-	•	macOS (Homebrew): brew install tesseract
-	•	Ubuntu/Debian: sudo apt install tesseract-ocr
+	-	macOS / Linux / Windows with:
+	-	Python 3.12 (strongly recommended). (If you already have 3.14, create a 3.12 venv.)
+	-	git
+	-	pip
+	-	(Optional) Docker & Docker Compose if you want to run containers.
+	-	(Optional for OCR) Tesseract binary if you plan to OCR scanned PDFs:
+	-	macOS (Homebrew): brew install tesseract
+	-	Ubuntu/Debian: sudo apt install tesseract-ocr
 
 ⸻
 
@@ -60,19 +60,19 @@ Create directories:
 3) Prepare Google credentials (detailed)
 	1.	Open Google Cloud Console: https://console.cloud.google.com/ and sign in.
 	2.	Create/select a project:
-	•	Top-left → Project dropdown → New Project → name it (e.g., gmail-cv-extractor).
+	-	Top-left → Project dropdown → New Project → name it (e.g., gmail-cv-extractor).
 	3.	Enable Gmail API:
-	•	APIs & Services → Library → search Gmail API → Enable.
+	-	APIs & Services → Library → search Gmail API → Enable.
 	4.	Configure OAuth consent screen:
-	•	APIs & Services → OAuth consent screen.
-	•	Choose External (typical) → Create.
-	•	Fill App name, support email, developer contact email.
-	•	Scopes: click Add or Remove Scopes and ensure Gmail scopes include https://mail.google.com/ (we recommend full gmail access for reliable attachments).
-	•	Test users: add your Gmail address (required for unverified apps).
+	-	APIs & Services → OAuth consent screen.
+	-	Choose External (typical) → Create.
+	-	Fill App name, support email, developer contact email.
+	-	Scopes: click Add or Remove Scopes and ensure Gmail scopes include https://mail.google.com/ (we recommend full gmail access for reliable attachments).
+	-	Test users: add your Gmail address (required for unverified apps).
 	5.	Create OAuth credentials:
-	•	APIs & Services → Credentials → Create Credentials → OAuth client ID.
-	•	Select Application type: Desktop app and create.
-	•	Download JSON → save as credentials.json at repo root (do not commit it).
+	-	APIs & Services → Credentials → Create Credentials → OAuth client ID.
+	-	Select Application type: Desktop app and create.
+	-	Download JSON → save as credentials.json at repo root (do not commit it).
 	6.	Add credentials.json to .gitignore (if not already).
 
 ⸻
@@ -118,9 +118,9 @@ After token.pickle exists, run:
     python -m app.run_sync
 
 What the script does:
-	•	Authenticates via token.pickle / credentials.json.
-	•	Downloads attachments that match your configured query (filename:resume OR filename:cv and allowed extensions).
-	•	Parses attachments (regex/fuzzy heuristics), deduplicates by email, inserts candidates into the DB, and exports data/candidates.xlsx.
+-	Authenticates via token.pickle / credentials.json.
+-	Downloads attachments that match your configured query (filename:resume OR filename:cv and allowed extensions).
+-	Parses attachments (regex/fuzzy heuristics), deduplicates by email, inserts candidates into the DB, and exports data/candidates.xlsx.
 
 Summary will be printed to console.
 
@@ -133,11 +133,11 @@ Start API:
     uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 Open:
-	•	Swagger UI: http://localhost:8000/docs
-	•	Endpoints:
-	•	GET /candidates — list candidates
-	•	GET /candidate/{id} — candidate detail
-	•	POST /sync — trigger sync (runs synchronously in current code)
+-	Swagger UI: http://localhost:8000/docs
+-	Endpoints:
+-	GET /candidates — list candidates
+-	GET /candidate/{id} — candidate detail
+-	POST /sync — trigger sync (runs synchronously in current code)
 
 ⸻
 
@@ -175,20 +175,20 @@ If docker command is missing on macOS, install Docker Desktop: https://www.docke
 9) Testing: create dummy resumes
 
 Option A — send yourself real emails
-	•	From any email, send to your Gmail with attachments named:
-	•	John_Resume.pdf, My_CV.docx, Resume_Rushil.txt
-	•	Run python -m app.run_sync — attachments will be downloaded and parsed.
+-	From any email, send to your Gmail with attachments named:
+-	John_Resume.pdf, My_CV.docx, Resume_Rushil.txt
+-	Run python -m app.run_sync — attachments will be downloaded and parsed.
 
 Option B — mock attachments locally
-•	Place files in attachments/ folder:
-•	attachments/John_Resume.txt with content:
+-	Place files in attachments/ folder:
+-	attachments/John_Resume.txt with content:
         Name: John Doe
         Email: john@example.com
         Phone: +91 99999 99999
         Skills: Python, SQL, Docker
-•	In run_sync.py temporarily replace attachments = fetch_attachments(...) with:
+-	In run_sync.py temporarily replace attachments = fetch_attachments(...) with:
         attachments = [{"filename":"John_Resume.txt","path":"attachments/John_Resume.txt"}]
-•	Run sync to test parser and DB logic.
+-	Run sync to test parser and DB logic.
 
 ⸻
 
