@@ -4,7 +4,7 @@ A production-ready Gmail → resume ingestion tool that downloads attachments fr
 
 This README assumes you do not include any credentials in the repo (good). It tells you exactly what to create and run after cloning.
 
-⸻
+---
 
 Table of contents
 1.	Prerequisites
@@ -20,7 +20,7 @@ Table of contents
 11.	Security notes & production tips
 12.	Optional improvements
 
-⸻
+---
 
 1) Prerequisites
 	-	macOS / Linux / Windows with:
@@ -32,7 +32,7 @@ Table of contents
 	-	macOS (Homebrew): brew install tesseract
 	-	Ubuntu/Debian: sudo apt install tesseract-ocr
 
-⸻
+---
 
 2) Quick repo layout (expected)
 
@@ -55,27 +55,27 @@ Create directories:
     mkdir -p data attachments
     chmod -R 755 data attachments
 
-⸻
+---
 
 3) Prepare Google credentials (detailed)
 	1.	Open Google Cloud Console: https://console.cloud.google.com/ and sign in.
 	2.	Create/select a project:
-	-	Top-left → Project dropdown → New Project → name it (e.g., gmail-cv-extractor).
+	    -	Top-left → Project dropdown → New Project → name it (e.g., gmail-cv-extractor).
 	3.	Enable Gmail API:
-	-	APIs & Services → Library → search Gmail API → Enable.
+	    -	APIs & Services → Library → search Gmail API → Enable.
 	4.	Configure OAuth consent screen:
-	-	APIs & Services → OAuth consent screen.
-	-	Choose External (typical) → Create.
-	-	Fill App name, support email, developer contact email.
-	-	Scopes: click Add or Remove Scopes and ensure Gmail scopes include https://mail.google.com/ (we recommend full gmail access for reliable attachments).
-	-	Test users: add your Gmail address (required for unverified apps).
+        -	APIs & Services → OAuth consent screen.
+        -	Choose External (typical) → Create.
+        -	Fill App name, support email, developer contact email.
+        -	Scopes: click Add or Remove Scopes and ensure Gmail scopes include https://mail.google.com/ (we recommend full gmail access for reliable attachments).
+	    -	Test users: add your Gmail address (required for unverified apps).
 	5.	Create OAuth credentials:
-	-	APIs & Services → Credentials → Create Credentials → OAuth client ID.
-	-	Select Application type: Desktop app and create.
-	-	Download JSON → save as credentials.json at repo root (do not commit it).
+        -	APIs & Services → Credentials → Create Credentials → OAuth client ID.
+        -	Select Application type: Desktop app and create.
+        -	Download JSON → save as credentials.json at repo root (do not commit it).
 	6.	Add credentials.json to .gitignore (if not already).
 
-⸻
+---
 
 4) Local setup (virtual environment, deps)
 	1.	Use Python 3.12 (install via Homebrew on macOS if needed):
@@ -96,7 +96,7 @@ Create directories:
 brew install tesseract
 
 
-⸻
+---
 
 5) First OAuth run — generate token.pickle
 	1.	Place credentials.json in repo root.
@@ -109,7 +109,7 @@ brew install tesseract
 
 If running on a headless server: run this step locally then copy token.pickle into the server or container.
 
-⸻
+---
 
 6) Run the sync locally
 
@@ -124,7 +124,7 @@ What the script does:
 
 Summary will be printed to console.
 
-⸻
+---
 
 7) Run FastAPI server (browse candidates)
 
@@ -139,38 +139,38 @@ Open:
 -	GET /candidate/{id} — candidate detail
 -	POST /sync — trigger sync (runs synchronously in current code)
 
-⸻
+---
 
 8) Docker & Docker Compose
 
 Dockerfile (provided)
 
-Basic flow:
+- docker-compose (recommended)
 
-    docker build -t gmail-cv-extractor .
+    Use the docker-compose.yml in the repo. Example use:
 
-Docker run (sync mode)
+        docker compose build
+        docker compose up        # default MODE=sync
+        MODE=api docker compose up  # run FastAPI
 
-Mount credentials and token and bind folders:
+- Basic flow:
 
-    docker run --rm \
-    -v $(pwd)/credentials.json:/app/credentials.json:ro \
-    -v $(pwd)/token.pickle:/app/token.pickle:rw \
-    -v $(pwd)/attachments:/app/attachments \
-    -v $(pwd)/data:/app/data \
-    gmail-cv-extractor
+        docker build -t gmail-cv-extractor .
 
-docker-compose (recommended)
+    Docker run (sync mode)
 
-Use the docker-compose.yml in the repo. Example use:
+    Mount credentials and token and bind folders:
 
-    docker compose build
-    docker compose up        # default MODE=sync
-    MODE=api docker compose up  # run FastAPI
+        docker run --rm \
+        -v $(pwd)/credentials.json:/app/credentials.json:ro \
+        -v $(pwd)/token.pickle:/app/token.pickle:rw \
+        -v $(pwd)/attachments:/app/attachments \
+        -v $(pwd)/data:/app/data \
+        gmail-cv-extractor
 
 If docker command is missing on macOS, install Docker Desktop: https://www.docker.com/products/docker-desktop/
 
-⸻
+---
 
 9) Testing: create dummy resumes
 
@@ -190,7 +190,7 @@ Option B — mock attachments locally
         attachments = [{"filename":"John_Resume.txt","path":"attachments/John_Resume.txt"}]
 -	Run sync to test parser and DB logic.
 
-⸻
+---
 
 10) Troubleshooting (common issues)
 
@@ -220,8 +220,6 @@ Option B — mock attachments locally
   Copy the URL printed in the terminal and open it manually in your browser.  
   Make sure the account you choose is added as a **Test User** in your OAuth consent screen.
 
----
-
 ### 🔐 Security Notes & Best Practices
 
 - Never commit `credentials.json` or `token.pickle` to the repository — add them to `.gitignore`.  
@@ -233,45 +231,40 @@ Option B — mock attachments locally
 
 ---
 
-### 🚀 Optional Improvements (Next Steps)
-
-- Add **Alembic migrations** for database schema changes.  
-- Replace **SQLite** with **PostgreSQL** for multi-user or production environments.  
-- Add a background worker (**Celery** or **RQ**) for heavy parsing jobs.  
-- Create a **React UI** for browsing resumes and exporting data.  
-- Integrate a **managed resume parser API** or fine-tuned **NER model** for higher parsing accuracy.  
-- Add **S3/GCS storage** for attachments and automatic S3 export backups for Excel files.
-
-⸻
-
 # Quick copy-paste checklist (do this right after cloning)
 
 clone
+
     git clone <your-repo-url>
     cd gmail-cv-extractor
 
 prepare dirs
+
     mkdir -p data attachments
     chmod -R 755 data attachments
 
 create python venv (python3.12)
+
     python3.12 -m venv .venv
     source .venv/bin/activate
 
 install deps
+
     pip install --upgrade pip
     pip install -r requirements.txt
 
 copy credentials.json (create in Google Cloud as explained above)
 run this locally to create token.pickle (opens browser)
+
     python -m app.run_sync
 
 run API (optional)
+
     uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 or run in docker-compose
+
     docker compose build
     docker compose up
 
-
-⸻
+---
