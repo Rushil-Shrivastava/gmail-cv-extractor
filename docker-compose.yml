@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  gmail_extractor:
+    build: .
+    container_name: gmail-cv-extractor
+    image: gmail-cv-extractor:latest
+
+    # --- Mount necessary volumes ---
+    volumes:
+      - ./credentials.json:/app/credentials.json:ro
+      - ./token.pickle:/app/token.pickle:rw
+      - ./attachments:/app/attachments
+      - ./data:/app/data
+
+    # --- Environment configuration ---
+    environment:
+      - ATTACHMENTS_DIR=/app/attachments
+      - DATABASE_URL=sqlite:///./data/cv_database.db
+      - PYTHONUNBUFFERED=1
+      # Choose mode: sync (default) or api
+      - MODE=sync
+      # Optional: adjust Gmail query if needed
+      - GMAIL_QUERY=has:attachment (filename:resume OR filename:cv OR subject:resume OR subject:cv)
+
+    # --- Port for FastAPI mode ---
+    ports:
+      - "8000:8000"
+
+    # --- Command logic: choose between API and Sync ---
+    command: >
+      sh -c "
+        echo '[INFO] Running in MODE=$MODE';
+        if [ \"$MODE\" = 'api' ]; then
+          echo '[INFO] Starting FastAPI server...';
+          uvicorn app.main:app --host 0.0.0.0 --port 8000;
+        else
+          echo '[INFO] Starting one-time resume sync...';
+          python -m app.run_sync;
+        fi
+      "
+
+    # --- Restart automatically on failure ---
+    restart: on-failure
+
+    # --- Optional resource limits ---
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M

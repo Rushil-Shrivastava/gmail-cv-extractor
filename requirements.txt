@@ -1,0 +1,29 @@
+# --- Core Web Framework ---
+fastapi==0.115.0
+uvicorn[standard]==0.30.0
+
+# --- Google Gmail API dependencies ---
+google-api-python-client==2.125.0
+google-auth-httplib2==0.2.0
+google-auth-oauthlib==1.2.0
+
+# --- Database + ORM ---
+sqlalchemy==2.0.30
+alembic==1.13.1
+pydantic==2.8.2
+
+# --- Resume parsing / NLP ---
+pdfplumber==0.11.0
+pymupdf==1.24.4
+python-docx==1.1.2
+pandas==2.2.2
+fuzzywuzzy==0.18.0
+python-Levenshtein==0.25.1
+pytesseract==0.3.13
+Pillow==10.4.0
+
+# --- Utilities ---
+requests==2.32.3
+python-dateutil==2.9.0.post0
+python-multipart==0.0.9
+openpyxl==3.1.5

@@ -1,0 +1,123 @@
+# -------------------------------
+# 🔒 Security & Credentials
+# -------------------------------
+credentials.json
+token.pickle
+token.json
+.env
+*.pem
+*.key
+*.crt
+secrets/
+.env.*
+
+# -------------------------------
+# 🧠 Project Data & Artifacts
+# -------------------------------
+attachments/
+data/
+*.db
+*.sqlite
+*.xlsx
+*.csv
+*.jsonl
+logs/
+*.log
+
+# -------------------------------
+# 🧰 Python Environment
+# -------------------------------
+# Virtual environment
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+pip-log.txt
+pytest_cache/
+.coverage
+.cache/
+.tox/
+.mypy_cache/
+.pytest_cache/
+.dmypy.json
+.pyre/
+.idea/
+.vscode/
+*.code-workspace
+
+# -------------------------------
+# 🐳 Docker & Build Artifacts
+# -------------------------------
+*.pid
+*.tar
+*.zip
+*.gz
+*.bak
+*.tmp
+.DS_Store
+Thumbs.db
+.dockerignore
+docker-compose.override.yml
+build/
+dist/
+node_modules/
+site/
+*.spec
+
+# -------------------------------
+# ⚙️ System / Misc
+# -------------------------------
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+# Linux
+*~
+# Windows
+Desktop.ini
+ehthumbs.db
+$RECYCLE.BIN/
+
+# -------------------------------
+# 📜 Logs & Temp
+# -------------------------------
+nohup.out
+*.log.*
+*.bak
+tmp/
+temp/
+*.swp
+*.swo
+*.orig
+*.rej
+
+# -------------------------------
+# 🧪 Test & Development
+# -------------------------------
+test_output/
+debug/
+sandbox/
+notebooks/
+examples/
+playground/
+
+# -------------------------------
+# 🧭 Local configuration
+# -------------------------------
+# FastAPI / Uvicorn reload artifacts
+*.sqlite-journal
+*.db-journal
+*.pyc
+*.pid
+*.sock
+*.pid.lock
+
+# Local backup files
+*.old
+*.save
+*.bak
