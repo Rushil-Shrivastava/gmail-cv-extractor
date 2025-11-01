@@ -36,19 +36,19 @@ Table of contents
 
 2) Quick repo layout (expected)
 
-    gmail-cv-extractor/
-    ├── app/
-    │   ├── main.py
-    │   ├── run_sync.py
-    │   ├── parser.py
-    │   ├── db.py
-    │   └── gmail_client.py
-    ├── data/            # created by you
-    ├── attachments/     # created by you
-    ├── requirements.txt
-    ├── Dockerfile
-    ├── docker-compose.yml
-    └── README.md
+        gmail-cv-extractor/
+        ├── app/
+        │   ├── main.py
+        │   ├── run_sync.py
+        │   ├── parser.py
+        │   ├── db.py
+        │   └── gmail_client.py
+        ├── data/            # created by you
+        ├── attachments/     # created by you
+        ├── requirements.txt
+        ├── Dockerfile
+        ├── docker-compose.yml
+        └── README.md
 
 Create directories:
 
@@ -151,24 +151,24 @@ Basic flow:
 
 Docker run (sync mode)
 
-    Mount credentials and token and bind folders:
+Mount credentials and token and bind folders:
 
-        docker run --rm \
-        -v $(pwd)/credentials.json:/app/credentials.json:ro \
-        -v $(pwd)/token.pickle:/app/token.pickle:rw \
-        -v $(pwd)/attachments:/app/attachments \
-        -v $(pwd)/data:/app/data \
-        gmail-cv-extractor
+    docker run --rm \
+    -v $(pwd)/credentials.json:/app/credentials.json:ro \
+    -v $(pwd)/token.pickle:/app/token.pickle:rw \
+    -v $(pwd)/attachments:/app/attachments \
+    -v $(pwd)/data:/app/data \
+    gmail-cv-extractor
 
 docker-compose (recommended)
 
-    Use the docker-compose.yml in the repo. Example use:
+Use the docker-compose.yml in the repo. Example use:
 
-        docker compose build
-        docker compose up        # default MODE=sync
-        MODE=api docker compose up  # run FastAPI
+    docker compose build
+    docker compose up        # default MODE=sync
+    MODE=api docker compose up  # run FastAPI
 
-    If docker command is missing on macOS, install Docker Desktop: https://www.docker.com/products/docker-desktop/
+If docker command is missing on macOS, install Docker Desktop: https://www.docker.com/products/docker-desktop/
 
 ⸻
 
@@ -180,90 +180,96 @@ Option A — send yourself real emails
 	•	Run python -m app.run_sync — attachments will be downloaded and parsed.
 
 Option B — mock attachments locally
-	•	Place files in attachments/ folder:
-	•	attachments/John_Resume.txt with content:
-
+•	Place files in attachments/ folder:
+•	attachments/John_Resume.txt with content:
         Name: John Doe
         Email: john@example.com
         Phone: +91 99999 99999
         Skills: Python, SQL, Docker
-
-
-	•	In run_sync.py temporarily replace attachments = fetch_attachments(...) with:
-
+•	In run_sync.py temporarily replace attachments = fetch_attachments(...) with:
         attachments = [{"filename":"John_Resume.txt","path":"attachments/John_Resume.txt"}]
-
-	•	Run sync to test parser and DB logic.
+•	Run sync to test parser and DB logic.
 
 ⸻
 
 10) Troubleshooting (common issues)
-	•	pg_config executable not found when installing psycopg2:
-	•	If you plan to use PostgreSQL, install libpq-dev (Linux) or brew install postgresql (macOS).
-	•	If you use SQLite only, remove psycopg2-binary from requirements.txt.
-	•	blis/spacy build errors on Python 3.14:
-	•	Use Python 3.12 (recommended) or remove spaCy from requirements if you don’t need it.
-	•	sqlite3.OperationalError: unable to open database file:
-	•	Ensure data/ directory exists and is writable:
 
-        mkdir -p data attachments
-        chmod -R 755 data attachments
+- **pg_config executable not found when installing psycopg2:**  
+  If you plan to use PostgreSQL, install `libpq-dev` (Linux) or `brew install postgresql` (macOS).  
+  If you use SQLite only, remove `psycopg2-binary` from `requirements.txt`.
 
+- **blis/spacy build errors on Python 3.14:**  
+  Use Python 3.12 (recommended) or remove spaCy from requirements if you don’t need it.
 
-	•	PDFPasswordIncorrect when parsing a PDF:
-	•	The parser will skip locked PDFs and log a warning. You can inspect attachments/ to see which were skipped.
-	•	UNIQUE constraint failed: candidates.email:
-	•	Duplicate prevention is handled but if you still see this, ensure add_candidate() checks for existing email before insert.
-	•	OAuth flow fails (browser not opening):
-	•	Copy the URL printed to the terminal into a browser manually.
-	•	Make sure the account you choose is added as test user in the OAuth consent screen.
+- **sqlite3.OperationalError: unable to open database file:**  
+  Ensure `data/` directory exists and is writable:  
+    ```bash
+    mkdir -p data attachments
+    chmod -R 755 data attachments
+    ```
+
+	- **`PDFPasswordIncorrect` when parsing a PDF:**  
+  The parser will skip locked PDFs and log a warning.  
+  You can inspect the `attachments/` directory to see which files were skipped.
+
+- **`UNIQUE constraint failed: candidates.email`:**  
+  Duplicate prevention is handled internally, but if you still see this,  
+  ensure `add_candidate()` checks for existing emails before inserting new entries.
+
+- **OAuth flow fails (browser not opening):**  
+  Copy the URL printed in the terminal and open it manually in your browser.  
+  Make sure the account you choose is added as a **Test User** in your OAuth consent screen.
+
+---
+
+### 🔐 Security Notes & Best Practices
+
+- Never commit `credentials.json` or `token.pickle` to the repository — add them to `.gitignore`.  
+- Use secret management solutions in production (e.g. **Vault**, **AWS Secrets Manager**, or **GitHub Secrets**).  
+- Limit Gmail API scope if possible (`gmail.readonly`),  
+  though attachments access typically requires `https://mail.google.com/`.  
+- On shared servers or CI systems, avoid interactive OAuth flows —  
+  generate `token.pickle` locally and mount it inside the container.
+
+---
+
+### 🚀 Optional Improvements (Next Steps)
+
+- Add **Alembic migrations** for database schema changes.  
+- Replace **SQLite** with **PostgreSQL** for multi-user or production environments.  
+- Add a background worker (**Celery** or **RQ**) for heavy parsing jobs.  
+- Create a **React UI** for browsing resumes and exporting data.  
+- Integrate a **managed resume parser API** or fine-tuned **NER model** for higher parsing accuracy.  
+- Add **S3/GCS storage** for attachments and automatic S3 export backups for Excel files.
 
 ⸻
 
-11) Security notes & best practices
-	•	Never commit credentials.json or token.pickle to the repo. Add them to .gitignore.
-	•	Use secret management in production (Vault, AWS Secrets Manager, GitHub Secrets).
-	•	Limit scope if you can (test with gmail.readonly however attachments access might require https://mail.google.com/).
-	•	On shared servers, avoid running interactive OAuth flows — generate token.pickle locally and mount it.
+# Quick copy-paste checklist (do this right after cloning)
 
-⸻
-
-12) Optional improvements (next steps)
-	•	Add Alembic migrations for DB schema changes.
-	•	Replace SQLite with PostgreSQL for multi-user/production.
-	•	Add background worker (Celery / RQ) for heavy parsing jobs.
-	•	Add a React UI for browsing resumes and exporting.
-	•	Use a managed resume parser or a fine-tuned NER model for higher accuracy.
-	•	Add S3/GCS storage for attachments and S3 upload for Excel export backups.
-
-⸻
-
-Quick copy-paste checklist (do this right after cloning)
-
-# clone
+clone
     git clone <your-repo-url>
     cd gmail-cv-extractor
 
-# prepare dirs
+prepare dirs
     mkdir -p data attachments
     chmod -R 755 data attachments
 
-# create python venv (python3.12)
+create python venv (python3.12)
     python3.12 -m venv .venv
     source .venv/bin/activate
 
-# install deps
+install deps
     pip install --upgrade pip
     pip install -r requirements.txt
 
-# copy credentials.json (create in Google Cloud as explained above)
-# run this locally to create token.pickle (opens browser)
+copy credentials.json (create in Google Cloud as explained above)
+run this locally to create token.pickle (opens browser)
     python -m app.run_sync
 
-# run API (optional)
+run API (optional)
     uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
-# or run in docker-compose
+or run in docker-compose
     docker compose build
     docker compose up
 
